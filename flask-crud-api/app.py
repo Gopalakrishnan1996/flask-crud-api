@@ -122,4 +122,16 @@ def delete_summary(id):
 @app.route('/cur_available', methods=['GET'])
 def cur_available():
     return object3.cur_available()
+
+@app.route('/Allocate_Book', methods=['GET'])
+def Allocate_Book():
+    return object3.Allocate_Book() 
+
+@app.route('/Most_read_Book', methods=['GET'])
+def Most_read_Book():
+    return object3.Most_read_Book()
+        
+@app.route('/Return_Book', methods=['GET'])
+def Return_Book():
+    return object3.Return_Book()               
 # summary crud methods end   

@@ -30,13 +30,13 @@ class SummaryDataAccess:
         body = request.get_json()
         # Books stock update
         lsbookdet = _books.query.get(body['bookid'])
-        if(lsbookdet.curstock <= 0):
-            return "Book not available"
         if(body['type'] == 'I'):
           db.session.query(_books).filter_by(id=body['bookid']).update(
             dict(curstock=_books.curstock + 1))
         elif(body['type'] == 'O'):
-           db.session.query(_books).filter_by(id=body['bookid']).update(
+            if(lsbookdet.curstock <= 0):
+              return "Book not available"
+            db.session.query(_books).filter_by(id=body['bookid']).update(
             dict(curstock= _books.curstock - 1)) 
         # summary create
         db.session.add(_tables(body['bookid'], body['studentid'], body['studentname'], body['bookname'], body['getdate'], body['retdate'], body['type']))
@@ -45,12 +45,15 @@ class SummaryDataAccess:
 
     def update_item(id, body):
         body = request.get_json()
+        lsbookdet = _books.query.get(body['bookid'])
         # Books stock update
         if(body['type'] == 'I'):
           db.session.query(_books).filter_by(id=body['bookid']).update(
             dict(curstock=body['curstock'] + 1))
         elif(body['type'] == 'O'):
-           db.session.query(_books).filter_by(id=body['bookid']).update(
+            if(lsbookdet.curstock <= 0):
+              return "Book not available"
+            db.session.query(_books).filter_by(id=body['bookid']).update(
             dict(curstock=body['curstock'] - 1))   
         
         # summary stock insert
@@ -69,3 +72,17 @@ class SummaryDataAccess:
         result = db.engine.execute(sql)
         return jsonify({'result': [dict(row) for row in result]})
 
+    def Allocate_Book():
+        sql = text("select b.name,b.std,b.regno,a.bookname,a.getdate,a.type from summary a inner join students b on a.studentid = b.id where type = 'O'")
+        result = db.engine.execute(sql)
+        return jsonify({'result': [dict(row) for row in result]})
+
+    def Most_read_Book():
+        sql = text("select  count(*) as maxread, bookname,b.author from summary a inner join books b on a.bookid = b.id group by bookname,author having count(*) > 0")
+        result = db.engine.execute(sql)
+        return jsonify({'result': [dict(row) for row in result]})
+
+    def Return_Book():
+        sql = text("select * from summary where type = 'I'")
+        result = db.engine.execute(sql)
+        return jsonify({'result': [dict(row) for row in result]})
