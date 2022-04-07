@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 app1 = Flask(__name__)
 if __name__ == '__main__':
     app1.run(debug=True)
@@ -64,7 +65,7 @@ class SummaryDataAccess:
         return "Data deleted"
 
     def cur_available():
-        lsava = db.session.query(_books).filter_by(_books.curstock >=0)
-        # db.session.commit()
-        return jsonify(lsava)
+        sql = text('select * from public."books" where curstock > 0')
+        result = db.engine.execute(sql)
+        return jsonify({'result': [dict(row) for row in result]})
 
