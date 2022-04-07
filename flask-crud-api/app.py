@@ -127,10 +127,10 @@ def cur_available():
 def Allocate_Book():
     return object3.Allocate_Book() 
 
-@app.route('/Most_read_Book', methods=['GET'])
-def Most_read_Book():
-    return object3.Most_read_Book()
-        
+@app.route('/Most_read_Book/<frmdate>/<todate>', methods=['GET'])
+def Most_read_Book(frmdate,todate):
+    return object3.Most_read_Book(frmdate,todate) 
+
 @app.route('/Return_Book', methods=['GET'])
 def Return_Book():
     return object3.Return_Book()               

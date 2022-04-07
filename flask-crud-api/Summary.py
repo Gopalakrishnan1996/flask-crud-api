@@ -77,8 +77,8 @@ class SummaryDataAccess:
         result = db.engine.execute(sql)
         return jsonify({'result': [dict(row) for row in result]})
 
-    def Most_read_Book():
-        sql = text("select  count(*) as maxread, bookname,b.author from summary a inner join books b on a.bookid = b.id group by bookname,author having count(*) > 0")
+    def Most_read_Book(frmdate,todate):
+        sql = text("select  count(*) as maxread, bookname,b.author from summary a inner join books b on a.bookid = b.id where a.type <> 'I' and a.getdate >= '"+ frmdate +"' and a.getdate <= '"+ todate +"' group by bookname,author having count(*) > 0")
         result = db.engine.execute(sql)
         return jsonify({'result': [dict(row) for row in result]})
 
